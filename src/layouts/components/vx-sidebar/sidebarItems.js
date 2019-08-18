@@ -43,6 +43,13 @@ export default [
     ]
   },
   {
+    url: "/home",
+    name: "Home",
+    slug: "home",
+    icon: "HomeIcon",
+    i18n: "Home",
+  },
+  {
     header: "Apps",
     i18n: "Apps",
   },
