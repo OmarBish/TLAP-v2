@@ -65,6 +65,14 @@ const router = new Router({
                     }
                 },
                 {
+                    path: '/questions',
+                    name: 'questions',
+                    component: () => import('./views/Questions.vue'),
+                    meta: {
+                        rule: 'editor'
+                    }
+                },
+                {
                     path: '/dashboard/ecommerce',
                     name: 'dashboard-ecommerce',
                     component: () => import('./views/DashboardECommerce.vue'),

@@ -50,6 +50,13 @@ export default [
     i18n: "Home",
   },
   {
+    url: "/questions",
+    name: "Questions",
+    slug: "questions",
+    icon: "FileIcon",
+    i18n: "Questions",
+  },
+  {
     header: "Apps",
     i18n: "Apps",
   },
