@@ -73,6 +73,14 @@ const router = new Router({
                     }
                 },
                 {
+                    path: '/questions/:id',
+                    name: 'singleQuestions',
+                    component: () => import('./views/SingleQuestion.vue'),
+                    meta: {
+                        rule: 'editor'
+                    }
+                },
+                {
                     path: '/dashboard/ecommerce',
                     name: 'dashboard-ecommerce',
                     component: () => import('./views/DashboardECommerce.vue'),
