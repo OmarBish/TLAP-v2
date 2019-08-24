@@ -20,7 +20,7 @@
             <feather-icon icon="AwardIcon" class="p-6 mb-8 bg-primary inline-flex rounded-full text-white shadow" svgClasses="h-8 w-8"></feather-icon>
             <!-- TODO set name dynamically -->
             <h1 class="mb-6 text-white align-middle">Welcome to TLAP </h1>
-            <h1>John doe</h1>
+            <h1>{{user_displayName}}</h1>
         </div>
         
         <!-- <p class="xl:w-3/4 lg:w-4/5 md:w-2/3 w-4/5 mx-auto text-white">You have done <strong>57.6%</strong> more sales today. Check your new badge in your profile.</p> -->
@@ -146,6 +146,11 @@ export default {
             ]
         }
     },
+    computed:{
+      user_displayName(){
+        return JSON.parse(localStorage.getItem('userInfo')).displayName
+      }
+    }
    
 
 }
