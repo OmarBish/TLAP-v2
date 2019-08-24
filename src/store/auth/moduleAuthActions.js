@@ -10,6 +10,7 @@
 
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import 'firebase/firestore'
 import router from '@/router'
 
 export default {
@@ -268,6 +269,21 @@ export default {
         // create user using firebase
         firebase.auth().createUserWithEmailAndPassword(payload.userDetails.email, payload.userDetails.password)
             .then(() => {
+                return firebase.firestore().collection('users').doc(payload.userDetails.email).set({
+                    score:0,
+                    rule:'admin',
+                    name:payload.userDetails.username
+                })
+                
+            }, (error) => {
+                payload.notify({
+                    title: 'Error',
+                    text: error.message,
+                    iconPack: 'feather',
+                    icon: 'icon-alert-circle',
+                    color: 'danger'
+                });
+            }).then( () =>{
                 payload.notify({
                     title: 'Account Created',
                     text: 'You are successfully registered!',
@@ -282,7 +298,7 @@ export default {
                     updateUsername: true
                 }
                 dispatch('login', newPayload)
-            }, (error) => {
+            },(error)=>{
                 payload.notify({
                     title: 'Error',
                     text: error.message,
@@ -291,23 +307,49 @@ export default {
                     color: 'danger'
                 });
             })
+
+
     },
     updateUsername({ commit }, payload) {
         payload.user.updateProfile({
             displayName: payload.username
         }).then(() => {
+            firebase.firestore().collection('users').doc(payload.user.email).get()
+            .then((doc)=>{ 
+                if (doc.exists) {
+                    // If username update is success
+                    // update in localstorage
+                    let newUserData = Object.assign({}, payload.user.providerData[0])
+                    newUserData.rule = 'admin'
+                    newUserData.displayName = payload.username
+                    commit('UPDATE_AUTHENTICATED_USER', newUserData)
 
-            // If username update is success
-              // update in localstorage
-            let newUserData = Object.assign({}, payload.user.providerData[0])
-            newUserData.displayName = payload.username
-            commit('UPDATE_AUTHENTICATED_USER', newUserData)
-
-            // If reload is required to get fresh data after update
-              // Reload current page
-            if(payload.isReloadRequired) {
-                router.push(router.currentRoute.query.to || '/')
-            }
+                    // If reload is required to get fresh data after update
+                    // Reload current page
+                    if(payload.isReloadRequired) {
+                        router.push(router.currentRoute.query.to || '/')
+                    }
+                } else {
+                    // doc.data() will be undefined in this case
+                    payload.notify({
+                        time: 8800,
+                        title: 'Error',
+                        text: 'cant find firebase User',
+                        iconPack: 'feather',
+                        icon: 'icon-alert-circle',
+                        color: 'danger'
+                    })
+                }
+            }).catch(function(error) {
+                payload.notify({
+                    time: 8800,
+                    title: 'Error',
+                    text: error.message,
+                    iconPack: 'feather',
+                    icon: 'icon-alert-circle',
+                    color: 'danger'
+                });    
+            });
         }).catch((err) => {
               payload.notify({
                 time: 8800,
