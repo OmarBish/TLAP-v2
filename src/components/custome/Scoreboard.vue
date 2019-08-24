@@ -37,7 +37,7 @@
                 <ul class="users-liked user-list mt-1">
                     <li v-for="(user, userIndex) in data[indextr].solvedQuestions" :key="userIndex">
                         <vx-tooltip :text="user.name" position="bottom">
-                            <vs-avatar :src="require(`@/assets/images/portrait/small/${user.img}`)" size="30px" class="border-2 border-white border-solid -m-1"></vs-avatar>
+                          <vs-avatar :src="user.img" size="30px" class="border-2 border-white border-solid -m-1"></vs-avatar>
                         </vx-tooltip>
                     </li>
                 </ul>
@@ -52,24 +52,24 @@
 </template>
 
 <script>
+import firebase from 'firebase/app'
+import 'firebase/firestore'
+let db = firebase.firestore();
 export default {
   data() {
     return {
       users: [
-          {
-              "rank": 1,
-              "name": "Leanne Graham",
-              "score": 15,
-              "username": "Bret",
-              "email": "Sincere@april.biz",
-              "website": "hildegard.org",
-              solvedQuestions: [
-                        { name: 'Vennie Mostowy', img: 'avatar-s-5.png' },
-                        { name: 'Elicia Rieske', img: 'avatar-s-7.png' },
-                        { name: 'Julee Rossignol', img: 'avatar-s-10.png' },
-                        { name: 'Darcey Nooner', img: 'avatar-s-8.png' }
-                    ],
-          }
+          // {
+          //     "rank": 1,
+          //     "name": "Leanne Graham",
+          //     "score": 15,
+          //     solvedQuestions: [
+          //               { name: 'Vennie Mostowy', img: 'avatar-s-5.png' },
+          //               { name: 'Elicia Rieske', img: 'avatar-s-7.png' },
+          //               { name: 'Julee Rossignol', img: 'avatar-s-10.png' },
+          //               { name: 'Darcey Nooner', img: 'avatar-s-8.png' }
+          //           ],
+          // }
 
       ]
     }
@@ -80,12 +80,21 @@ export default {
     }
   },
   created(){
-    
-    this.getScoreboard()
-        .then( (response) => {
-          console.log(response.data);
-          this.users = response.data
-        })
+    db.collection("users").orderBy('score','desc').get().then((querySnapshot) => {
+      let rank = 1;
+    querySnapshot.forEach((doc) => {
+      const user = {
+        rank: rank++,
+        name:doc.data().name,
+        score:doc.data().score,
+        solvedQuestions:doc.data().recentQuestions
+      }
+      this.users.push(user);
+      console.log(doc.id , doc.data());
+      console.log(doc.id , doc.data().recentQuestions);
+    });
+     
+});
   }
 }
 </script>
