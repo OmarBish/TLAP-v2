@@ -1,6 +1,9 @@
 // en, de, fr, pt
 export default {
 	en: {
+		Home:'Home',
+		Questions :'Questions',
+		SingleQuestion : 'Single Question',
 		Dashboard: 'Dashboard',
 		eCommerce: 'eCommerce',
 		Apps: 'Apps',
