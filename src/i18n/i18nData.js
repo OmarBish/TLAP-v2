@@ -2,6 +2,7 @@
 export default {
 	en: {
 		Home:'Home',
+		Contests:'Contests',
 		Questions :'Questions',
 		SingleQuestion : 'Single Question',
 		Dashboard: 'Dashboard',

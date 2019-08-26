@@ -65,6 +65,14 @@ const router = new Router({
                     }
                 },
                 {
+                    path: '/contests',
+                    name: 'contests',
+                    component: () => import('./views/Contests.vue'),
+                    meta: {
+                        rule: 'editor'
+                    }
+                },
+                {
                     path: '/questions',
                     name: 'questions',
                     component: () => import('./views/Questions.vue'),

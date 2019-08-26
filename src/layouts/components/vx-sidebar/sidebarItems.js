@@ -50,6 +50,13 @@ export default [
     i18n: "Home",
   },
   {
+    url: "/contests",
+    name: "Contests",
+    slug: "contests",
+    icon: "AwardIcon",
+    i18n: "Contests",
+  },
+  {
     url: "/questions",
     name: "Questions",
     slug: "questions",
