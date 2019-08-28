@@ -9,71 +9,111 @@
 
 <template>
     <div id="demo-basic-card">
+    <add-new-contest-sidebar :isSidebarActive="addNewSidebar" @closeSidebar="addNewSidebar = false" />
+
         <div class="vx-row">
-            <div class="vx-col w-full sm:w-1/2 lg:w-1/3 mb-base" v-for="contest in contests" :key="contest.id">
-                <vx-card>
-                    <div slot="no-body">
-                        <img :src="require(`@/assets/images/pages/${contest.contentImg1}`)" alt="content-img" class="responsive card-img-top">
-                    </div>
-                    <h5 class="mb-2">{{ contest.title }}</h5>
-                    <p class="text-grey">{{ contest.subtitle }}</p>
-                    <p class="text-grey">{{ contest.subtitle_2 }}</p>
-                    <div class="flex justify-between flex-wrap">
-                        <vs-button v-if="contest.available" class="w-full mt-4 shadow-lg" type="gradient" color="#7367F0" gradient-color-secondary="#CE9FFC">Join Now</vs-button>
-                        <vs-button disabled v-if="!contest.available" class="w-full mt-4" type="border" color="#b9b9b9">Not Available</vs-button>
-                    </div>
-                </vx-card>
-            </div>
-                        
+          <div class="vx-col w-full sm:w-1/2 lg:w-1/3 mb-base" v-for="contest in contests" :key="contest.id">
+              <vx-card @contextmenu.prevent="$refs.menu.open">
+                  <div slot="no-body">
+                      <img :src="contest.imgURL" alt="content-img" class="responsive card-img-top">
+                  </div>
+                  <h5 class="mb-2">{{ contest.name }}</h5>
+                  <p class="text-grey">{{ contest.description }}</p>
+                  <div class="flex justify-between flex-wrap">
+                      <vs-button @click="joinContest(contest)" v-if="contest.active" class="w-full mt-4 shadow-lg" type="gradient" color="#7367F0" gradient-color-secondary="#CE9FFC">Join Now</vs-button>
+                      <vs-button disabled v-if="!contest.active" class="w-full mt-4" type="border" color="#b9b9b9">Not Available</vs-button>
+                  </div>
+
+                  <!-- contest actions -->
+                  <vs-dropdown class="ml-auto md:block hidden cursor-pointer pos-tr" vs-trigger-click>
+                      <vs-button radius icon="icon-settings" icon-pack="feather"></vs-button>
+
+                      <vs-dropdown-menu class="w-32">
+                          <vs-dropdown-item>
+                            <div @click="deleteContest(contest.id)" class="flex items-center text-danger">
+                              <feather-icon icon="TrashIcon" class="inline-block mr-2 " svgClasses="w-4 h-4" />
+                              <span>Delete</span>
+                            </div>
+                          </vs-dropdown-item>
+                          <vs-dropdown-item v-if="!contest.active">
+                            <div @click="activateContest(contest.id)" class="flex items-center text-success">
+                              <feather-icon icon="PowerIcon" class="inline-block mr-2" svgClasses="w-4 h-4" />
+                              <span>Activate</span>
+                            </div>
+                          </vs-dropdown-item>
+                          <vs-dropdown-item v-if="contest.active">
+                            <div @click="disableContest(contest.id)" class="flex items-center">
+                              <feather-icon icon="PowerIcon" class="inline-block mr-2" svgClasses="w-4 h-4" />
+                              <span>Disable</span>
+                            </div>
+                          </vs-dropdown-item>
+                      </vs-dropdown-menu>
+                  </vs-dropdown>
+              </vx-card>
+          </div>
+
+          <!-- No Contents -->
+          <div class="vx-col w-full mb-base" v-if="contests.length == 0" >
+            <h1 class="text-center warning">There isn't any contest</h1>
+          </div>
         </div>
-    </div>
+
+        <!-- Add new button  -->
+        <vs-button @click="addNewSidebar = true" class="ml-auto md:block cursor-pointer" radius icon="icon-plus" icon-pack="feather"></vs-button>
+      </div>
 </template>
 
 <script>
-import VuePerfectScrollbar from 'vue-perfect-scrollbar'
-import { videoPlayer } from 'vue-video-player'
-import 'video.js/dist/video-js.css'
+import AddNewContestSidebar from '../components/custome/forms/AddNewContestSidebar';
 
 export default{
-    data() {
-        return {
-            // card 1
-            contests:[ 
-              {
-                contentImg1: 'content-img-1.jpg',
-                title: 'Vuesax Admin',
-                subtitle: 'By Pixinvent Creative Studio',
-                subtitle_2: 'Elite Author',
-                available: true
-              },
-              {
-                contentImg1: 'content-img-1.jpg',
-                title: 'Vuesax Admin',
-                subtitle: 'By Pixinvent Creative Studio',
-                subtitle_2: 'Elite Author',
-                available: false
-
-              },
-              {
-                contentImg1: 'content-img-1.jpg',
-                title: 'Vuesax Admin',
-                subtitle: 'By Pixinvent Creative Studio',
-                subtitle_2: 'Elite Author',
-                available: false
-
-              },
-            ]
-        }
+    data(){
+      return {
+        addNewSidebar : false
+      }
     },
-    components: {
-        VuePerfectScrollbar,
-        videoPlayer
-    },
-    mounted() {
-        this.$refs.chatLogPS.$el.scrollTop = this.$refs.chatLog.scrollHeight;
+    components:{
+      AddNewContestSidebar
     },
     created(){
-      
+      this.$store.dispatch('contest/fetchContests')
+    },
+    computed:{
+      contests(){ return this.$store.getters['contest/contests'] }
+      // contests(){ return [] }
+    },
+    methods:{
+      joinContest(contest){
+        let payload = {
+          id:contest.id,
+          duration:contest.duration,
+          name:contest.name
+        }
+        this.$store.dispatch('user/joinContest',payload)
+      },
+      deleteContest(id){
+        let payload = {
+          id : id,
+          notify : this.$vs.notify
+        }
+        this.$store.dispatch('contest/deleteContest',payload)
+        
+      },
+      activateContest(id){
+        let payload = {
+          id : id,
+          notify : this.$vs.notify
+        }
+        this.$store.dispatch('contest/activateContest',payload)
+      },
+      disableContest(id){
+        let payload = {
+          id : id,
+          notify : this.$vs.notify
+        }
+        this.$store.dispatch('contest/disableContest',payload)
+
+      }
     }
 }
 </script>
@@ -98,6 +138,11 @@ export default{
         .video-js {
             height: 370px;
         }
+    }
+    .pos-tr{
+      position: absolute;
+      top:10px;
+      right:10px;
     }
 }
 </style>
