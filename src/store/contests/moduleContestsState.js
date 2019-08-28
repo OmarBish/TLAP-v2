@@ -1,16 +1,33 @@
 /*=========================================================================================
   File Name: moduleCalendarState.js
   Description: Calendar Module State
-  ----------------------------------------------------------------------------------------
-  Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-  Author: Pixinvent
-  Author URL: http://www.themeforest.net/user/pixinvent
 ==========================================================================================*/
 
 export default {
     contests:[
-        {name:'easy'},
-        {name:'medium'}
+      {
+        contentImg1: 'content-img-1.jpg',
+        title: 'Vuesax Admin',
+        subtitle: 'By Pixinvent Creative Studio',
+        subtitle_2: 'Elite Author',
+        available: true
+      },
+      {
+        contentImg1: 'content-img-1.jpg',
+        title: 'Vuesax Admin',
+        subtitle: 'By Pixinvent Creative Studio',
+        subtitle_2: 'Elite Author',
+        available: false
+
+      },
+      {
+        contentImg1: 'content-img-1.jpg',
+        title: 'Vuesax Admin',
+        subtitle: 'By Pixinvent Creative Studio',
+        subtitle_2: 'Elite Author',
+        available: false
+
+      }
     ]
 }
   

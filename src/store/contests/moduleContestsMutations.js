@@ -9,8 +9,21 @@
 
 
 const mutations = {
-
-    
+  setContests(state,contests){
+    state.contests = contests
+  },
+  deleteContest(state,id){
+    state.contests = state.contests.filter( (contest) => contest.id != id)
+  },
+  disableContest(state,id){
+    state.contests.find((contest)=> contest.id == id ).active = false    
+  },
+  activateContest(state,id){
+    state.contests.find((contest)=> contest.id == id ).active = true    
+  },
+  addContest(state,contest){
+    state.contests.push(contest)
+  }
 }
 
 export default mutations
