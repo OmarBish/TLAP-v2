@@ -25,6 +25,9 @@ import moduleEmail from './email/moduleEmail.js'
 import moduleAuth from './auth/moduleAuth.js'
 import moduleECommerce from './eCommerce/moduleECommerce.js'
 import moduleContest from './contests/moduleContests.js'
+import moduleLevels from './levels/moduleLevels.js'
+import moduleUser from './user/moduleUser.js'
+
 
 
 export default new Vuex.Store({
@@ -39,7 +42,9 @@ export default new Vuex.Store({
         email: moduleEmail,
         auth: moduleAuth,
         eCommerce: moduleECommerce,
-        contest:moduleContest
+        contest:moduleContest,
+        levels:moduleLevels,
+        user:moduleUser
     },
     strict: process.env.NODE_ENV !== 'production'
 })
