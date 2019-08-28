@@ -69,6 +69,11 @@ const router = new Router({
                     name: 'contests',
                     component: () => import('./views/Contests.vue'),
                     meta: {
+                        breadcrumb: [
+                            { title: 'Home', url: '/' },
+                            { title: 'Contests', active: true },
+                        ],
+                        pageTitle: 'Contests',
                         rule: 'editor'
                     }
                 },
@@ -77,6 +82,12 @@ const router = new Router({
                     name: 'questions',
                     component: () => import('./views/Questions.vue'),
                     meta: {
+                        breadcrumb: [
+                            { title: 'Home', url: '/' },
+                            { title: 'Contests', url:'/contests'},
+                            { title: 'questions', active: true },
+                        ],
+                        pageTitle: 'Questions',
                         rule: 'editor'
                     }
                 },
