@@ -3,7 +3,12 @@
 ==========================================================================================*/
 const getters = {
     getQuestions:(state) => state.questions,
-    getUploadProgress:(state) => state.uploadTask
+    getUploadProgress:(state) => state.uploadTask,
+    getQuestion:(state) => (id) =>{
+      
+      console.log(state.questions.find((question)=>question.id == id))
+      return state.questions.find((question)=>question.id == id)
+    }
 
 }
 

@@ -28,6 +28,18 @@ const actions = {
       commit('setQuestions',questions)
     });
   },
+  fetchQuestion({commit},id){
+    db.collection("questions").doc(id)
+    .get().then( (doc) => {
+        const question = {
+          id:doc.id,
+          name:doc.data().name,
+          imgURL:doc.data().imgURL,
+          popularity:doc.data().popularity,
+        }
+      commit('addQuestion',question)
+    });
+  },
   addQuestion({commit},payload){
     let data = payload.question
     db.collection('questions').add(data)

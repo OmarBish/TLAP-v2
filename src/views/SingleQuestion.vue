@@ -1,10 +1,10 @@
 <template>
 <div>
-    <h1>{{name}}</h1>
+    <h1>{{questoin.name}}</h1>
     <div class="vx-col w-full sm:w-1/2 md:w-1/2 mb-base">
         <vx-card class="mt-2" title="Picture" collapse-action >
             <div class="text-center">
-                <img   src="https://picsum.photos/400/400" alt="none" sizes="400" class="myImage mx-auto" id="myimage">
+                <img :src="questoin.imgURL" alt="none" sizes="400" class="myImage mx-auto" id="myimage">
             </div>
         </vx-card>
     </div>
@@ -27,13 +27,17 @@ import VueFriendlyIframe from 'vue-friendly-iframe';
 export default {
     data(){
         return{
-            name:'question name',
             ctx:1,
             ypoints:[],
             xpoints:[],
             turtle:{
                 src:"./turtle-apps/turtle/index.html"
             }
+        }
+    },
+    computed:{
+        questoin(){
+            return this.$store.getters['questions/getQuestion'](this.$route.params.id)
         }
     },
     methods:{
@@ -107,8 +111,11 @@ export default {
         let canvas = this.$refs.canvas;
         this.ctx = canvas.getContext('2d'); 
         // magnify.add("myimage", 3);
-        console.log(this.$route.params.id)
 
+    },
+    created(){
+        if(!this.$store.getters['questions/getQuestion'](this.$route.params.id))
+            this.$store.dispatch('questions/fetchQuestion',this.$route.params.id)
     },
     components:{
         'vue-friendly-iframe': VueFriendlyIframe
