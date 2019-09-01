@@ -64,13 +64,6 @@ export default [
     i18n: "Questions",
   },
   {
-    url: "/questions/1",
-    name: "SingleQuestion",
-    slug: "single-question",
-    icon: "FileIcon",
-    i18n: "SingleQuestion",
-  },
-  {
     header: "Apps",
     i18n: "Apps",
   },
