@@ -11,8 +11,7 @@
 
     <div class="vx-col w-full  mb-base">
         <vx-card class="mt-2" title="Draw" collapse-action >
-                <iframe class="game" src="./turtle-apps/turtle/index.html" width="95%" height="655" sandbox="allow-same-origin allow-scripts"></iframe>
-
+                <iframe class="game" src="https://ieee-najah.github.io/apps/turtle/" width="95%" height="655" sandbox="allow-same-origin allow-scripts"></iframe>
         </vx-card>
     </div>
     
@@ -136,6 +135,9 @@ export default {
 .myImage{
     max-width: 400px;
     max-width: 400px; 
+}
+.game{
+    border:none;
 }
 
 </style>
