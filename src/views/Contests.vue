@@ -72,6 +72,7 @@
 
 <script>
 import AddNewContestSidebar from '../components/custome/forms/AddNewContestSidebar';
+import fb from 'firebase/app'
 
 export default{
     data(){
@@ -84,11 +85,26 @@ export default{
     },
     created(){
       this.$store.dispatch('contest/fetchContests')
+      if(this.$store.getters['user/getCurrentContest'].duration == null)
+        this.$store.dispatch('user/getCurrentContestData')
     },
     computed:{
       contests(){ return this.$store.getters['contest/contests'] },
       inContest(){
-        return this.$store.getters['user/inContest']
+        let currentContest = this.$store.getters['user/getCurrentContest']
+        if(!currentContest) return false;
+        let startTime = currentContest.start_time.seconds
+        let duration = currentContest.duration
+        let endtime = startTime + duration
+        let currentTime = fb.firestore.Timestamp.now().seconds
+        console.log(endtime > currentTime)
+        console.log('endtime',endtime )
+        console.log('currentTime',currentTime )
+        if( endtime > currentTime){
+            return true
+        }else{
+          return false
+        }
       }
       // contests(){ return [] }
     },

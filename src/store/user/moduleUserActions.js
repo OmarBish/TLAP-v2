@@ -25,6 +25,14 @@ const actions = {
     }).catch((err)=>{
       console.error(err);
     });
+  },
+  getCurrentContestData({commit}){
+    db.collection("users").doc(JSON.parse(localStorage.getItem('userInfo')).uid)
+    .get().then( (doc) => {
+      commit('updateCurrentContest',doc.data().current_contest)
+    }).catch((err)=>{
+      console.error(err);
+    });
   }
 
 }
