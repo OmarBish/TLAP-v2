@@ -93,7 +93,7 @@ const router = new Router({
                 },
                 {
                     path: '/questions/:id',
-                    name: 'singleQuestions',
+                    name: 'singleQuestion',
                     component: () => import('./views/SingleQuestion.vue'),
                     meta: {
                         rule: 'editor'
