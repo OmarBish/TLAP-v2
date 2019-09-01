@@ -20,8 +20,15 @@
                   <h5 class="mb-2">{{ contest.name }}</h5>
                   <p class="text-grey">{{ contest.description }}</p>
                   <div class="flex justify-between flex-wrap">
-                      <vs-button @click="joinContest(contest)" v-if="contest.active" class="w-full mt-4 shadow-lg" type="gradient" color="#7367F0" gradient-color-secondary="#CE9FFC">Join Now</vs-button>
-                      <vs-button disabled v-if="!contest.active" class="w-full mt-4" type="border" color="#b9b9b9">Not Available</vs-button>
+                      <vs-button @click="joinContest(contest)" v-if="contest.active && !inContest" class="w-full mt-4 shadow-lg" type="gradient" color="#7367F0" gradient-color-secondary="#CE9FFC">Join Now</vs-button>
+                      <vs-button 
+                      disabled @click="joinContest(contest)" 
+                      v-if="inContest" 
+                      class="w-full mt-4 shadow-lg" 
+                      type="gradient" 
+                      color="#7367F0" 
+                      gradient-color-secondary="#CE9FFC">You already Joined a contest</vs-button>
+                      <vs-button disabled v-if="!contest.active && !inContest " class="w-full mt-4" type="border" color="#b9b9b9">Not Available</vs-button>
                   </div>
 
                   <!-- contest actions -->
@@ -79,7 +86,10 @@ export default{
       this.$store.dispatch('contest/fetchContests')
     },
     computed:{
-      contests(){ return this.$store.getters['contest/contests'] }
+      contests(){ return this.$store.getters['contest/contests'] },
+      inContest(){
+        return this.$store.getters['user/inContest']
+      }
       // contests(){ return [] }
     },
     methods:{
