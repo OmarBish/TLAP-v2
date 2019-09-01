@@ -1,53 +1,26 @@
 <!-- =========================================================================================
-  File Name: DataListThumbView.vue
-  Description: Data List - Thumb View
-  ----------------------------------------------------------------------------------------
-  Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-  Author: Pixinvent
-  Author URL: http://www.themeforest.net/user/pixinvent
+  File Name: LevelQuestionsView.vue
+  Description: sho
+
 ========================================================================================== -->
 
 <template>
+<div>
   <div id="data-list-thumb-view" class="data-list-container">
 
-    <add-new-data-sidebar :isSidebarActive="addNewDataSidebar" @closeSidebar="addNewDataSidebar = false" />
+    <add-new-question-sidebar :isSidebarActive="AddNewQuestionSidebar" @closeSidebar="AddNewQuestionSidebar = false" />
 
-    <vs-table ref="table"  v-model="selected" @selected="handleSelected" pagination :max-items="itemsPerPage" search :data="users">
+    <vs-table ref="table"  @selected="handleSelected" v-model="selected"  pagination :max-items="itemsPerPage" search :data="questions">
 
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
 
         <div class="flex flex-wrap-reverse items-center">
 
-          <!-- ACTION - DROPDOWN -->
-          <vs-dropdown vs-trigger-click class="cursor-pointer mr-4 mb-4">
-
-            <div class="p-4 shadow-drop rounded-lg d-theme-dark-bg cursor-pointer flex items-center justify-center text-lg font-medium w-32">
-              <span class="mr-2">Actions</span>
-              <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
-            </div>
-
-            <vs-dropdown-menu>
-
-              <vs-dropdown-item>
-                <span>Delete</span>
-              </vs-dropdown-item>
-              <vs-dropdown-item>
-                <span>Archive</span>
-              </vs-dropdown-item>
-              <vs-dropdown-item>
-                <span>Print</span>
-              </vs-dropdown-item>
-              <vs-dropdown-item>
-                <span>Another Action</span>
-              </vs-dropdown-item>
-            </vs-dropdown-menu>
-          </vs-dropdown>
+          
 
           <!-- ADD NEW -->
-          <div class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-primary border border-solid border-primary" @click="addNewDataSidebar = true">
-              <feather-icon icon="PlusIcon" svgClasses="h-4 w-4" />
-              <span class="ml-2 text-base text-primary">Add New</span>
-          </div>
+          <label for="active">Level Active</label>
+          <vs-switch color="success" v-model="active" />
         </div>
 
         <!-- ITEMS PER PAGE -->
@@ -86,45 +59,46 @@
 
       <template slot-scope="{data}">
         <tbody>
-          <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
+          <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data" >
 
             <vs-td class="img-container">
-              <img :src="tr.img" class="product-img" />
+              <img style="border-radius:100%" :src="tr.imgURL" class="product-img" />
             </vs-td>
 
             <vs-td>
               <p class="product-name font-medium">{{ tr.name }}</p>
             </vs-td>
 
-            <!-- <vs-td>
-              <p class="product-category">{{ tr.category }}</p>
-            </vs-td> -->
+            
 
             <vs-td>
-              <vs-progress :percent="Number(tr.popularity)" :color="getPopularityColor(Number(tr.popularity))" class="shadow-md" />
+              <vs-progress :percent="Number(tr.popularity)?Number(tr.popularity):20" :color="getPopularityColor(Number(tr.popularity))" class="shadow-md" />
             </vs-td>
 
             <vs-td>
-              <vs-chip :color="getOrderStatusColor(tr.order_status)" class="product-order-status">{{ tr.order_status }}</vs-chip>
+              <vs-chip :color="getStatusColor(tr.status)" class="product-order-status">{{ getStatusText(tr.status) }}</vs-chip>
             </vs-td>
 
             <vs-td>
               <p class="product-price">${{ tr.price }}</p>
             </vs-td>
-
+            
           </vs-tr>
         </tbody>
       </template>
     </vs-table>
+    <!-- Add new button  -->
   </div>
+  <vs-button @click="AddNewQuestionSidebar = true" class="ml-auto md:block cursor-pointer hover-p" color="primary" radius icon="icon-plus" icon-pack="feather"></vs-button>
+</div>
 </template>
 
 <script>
-import AddNewDataSidebar from './AddNewDataSidebar.vue';
+import AddNewQuestionSidebar from './forms/AddNewQuestionSidebar.vue';
 
 export default {
   components: {
-    AddNewDataSidebar
+    AddNewQuestionSidebar
   },
   data() {
     return {
@@ -132,7 +106,7 @@ export default {
       users: [],
       itemsPerPage: 4,
       isMounted: false,
-      addNewDataSidebar: false,
+      AddNewQuestionSidebar: false,
     }
   },
   computed: {
@@ -142,18 +116,35 @@ export default {
       }
       return 0
     },
+    questions(){
+      return this.$store.getters['questions/getQuestions']
+    }
+  },
+  props:{
+    levelID : {
+      type: String,
+      required: true
+    },
+    active:{
+      type: Boolean,
+      required: true
+    }
   },
   methods: {
     handleSelected(tr){
-      this.$vs.notify({
-        title: `Selected ${tr.name}`,
-        text: `Email: ${tr.category}`
-      })
+      console.log(tr)
+      this.$router.push({ name: 'singleQuestion', params: { id: tr.id }})
     },
-    getOrderStatusColor(status) {
-      if(status == 'on hold') return "warning"
+    getStatusText(status) {
+      if(!status) return "Need work"
       if(status == 'delivered') return "success"
       if(status == 'canceled') return "danger"
+      return "primary"
+    },
+    getStatusColor(status) {
+      if(!status) return "danger"
+      if(status == 'delivered') return "success"
+      if(status == 'canceled') return "warning"
       return "primary"
     },
     getPopularityColor(num) {
@@ -177,25 +168,9 @@ export default {
     }
   },
   created() {
-    const thisIns = this;
-    
-    this.$http.get('https://firestore.googleapis.com/v1/projects/vuesax-admin/databases/(default)/documents/products/?pageSize=5')
-      .then(function (response) {
-        thisIns.users = thisIns.formatData(response.data.documents)
-        thisIns.$forceUpdate()
-         console.log('success')
-        
-      })
-      .catch(function (error) {
-        thisIns.$vs.notify({
-          title:'Error',
-          text: error,
-          color:'danger',
-          iconPack: 'feather',
-          icon:'icon-alert-circle'})
-          console.log('faile')
-      });
-     
+    console.log('this.levelID',this.levelID)
+
+    this.$store.dispatch('questions/fetchQuestions',this.levelID)
   },
   mounted() {
     this.isMounted = true;
@@ -204,6 +179,10 @@ export default {
 </script>
 
 <style lang="scss">
+
+.hover-p:hover{
+  color:#fff;
+}
 #data-list-thumb-view {
   .vs-con-table {
 

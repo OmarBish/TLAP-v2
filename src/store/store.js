@@ -27,6 +27,7 @@ import moduleECommerce from './eCommerce/moduleECommerce.js'
 import moduleContest from './contests/moduleContests.js'
 import moduleLevels from './levels/moduleLevels.js'
 import moduleUser from './user/moduleUser.js'
+import moduleQuestions from './questions/moduleQuestions'
 
 
 
@@ -44,7 +45,8 @@ export default new Vuex.Store({
         eCommerce: moduleECommerce,
         contest:moduleContest,
         levels:moduleLevels,
-        user:moduleUser
+        user:moduleUser,
+        questions:moduleQuestions
     },
     strict: process.env.NODE_ENV !== 'production'
 })
