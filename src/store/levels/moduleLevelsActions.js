@@ -9,9 +9,10 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 let db = firebase.firestore();
-let current_contest = JSON.parse(localStorage.getItem('userInfo')).current_contest
+
 const actions = {
   fetchLevels({commit}){
+    let current_contest = JSON.parse(localStorage.getItem('userInfo')).current_contest
     db.collection("contests").doc(current_contest.contest_id)
     .collection('levels').get()
     .then( (querySnapshot) => {
@@ -29,6 +30,7 @@ const actions = {
     });
   },
   addLevel({commit},payload){
+    let current_contest = JSON.parse(localStorage.getItem('userInfo')).current_contest
     let data = payload.level
     db.collection('contests').doc(current_contest.contest_id)
     .collection('levels').add(data)
