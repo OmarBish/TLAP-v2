@@ -82,9 +82,48 @@ const actions = {
   },
   addContest({commit},payload){
     let data = payload.contest
-    db.collection('contests').add(data).then((res)=>{
+    db.collection('contests').add(data)
+    .then((res)=>{
       data.id = res.id
-      commit('addContest',data);
+      //img upload to firestorage
+      var storageRef = firebase.storage().ref();
+      var questionImagesRef = storageRef.child('images/contests/'+res.id);
+
+      let uploadTask = questionImagesRef.put(payload.imageFile)
+      uploadTask.on('state_changed', function(snapshot){
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        let task = {
+          status:snapshot.state,
+          progress:progress
+        }
+        commit('setUploadProgress',task)
+      },function(error) {
+        // Handle unsuccessful uploads
+      }, function() {
+        // Handle successful uploads on complete
+        console.log('file uploaded successfuly');
+        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+          console.log('File available at', downloadURL);
+          db.collection('contests').doc(res.id).update({
+            imgURL:downloadURL
+          }).then(()=>{
+            payload.notify({
+              title:'Success',
+              text:'Question added successfully',
+              color:'success',
+              iconPack: 'feather',
+              icon:'icon-check'
+            })
+            commit('setUploadProgress',{
+              status:'COMPLEATED',
+              progress:100
+            })
+            data.imgURL = downloadURL
+            commit('addContest',data);
+          })
+        });
+      });
     }).catch((err)=>{
       payload.notify({
         title: 'Error',

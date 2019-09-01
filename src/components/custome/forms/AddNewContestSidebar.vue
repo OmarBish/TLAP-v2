@@ -46,6 +46,8 @@
         <vs-button :color="uploadButtonColor" type="border" icon="cloud_upload" class="mt-5 w-full" @click="$refs.fileInput.click()">upload</vs-button>
         <input type="file" style="display:none" ref="fileInput" accept="image/*" @change="handleFileUpload">
         <img :src="imageURL" width="80%" class="mt-5 ma">
+        <vs-progress :percent="uploadTask.progress" color="primary"></vs-progress>
+        <p class="small">{{uploadTask.status}}</p>
       </div>
     </VuePerfectScrollbar>
 
@@ -93,6 +95,9 @@ export default {
           this.initValues();
         }
       }
+    },
+    uploadTask(){
+      return this.$store.getters['contest/getUploadProgress']
     }
   },
   methods: {
@@ -120,21 +125,20 @@ export default {
       })
       fileReader.readAsDataURL(files[0])
       this.imageFile = files[0]
-
     },
     submitContest(){
         const payload={
           contest:{
             name:this.name,
-            imgURL:"https://picsum.photos/400/400",
+            imgURL:"https://dummyimage.com/400/000000/ffffff",
             description:this.description,
             active:this.active,
             duration:this.duration * 60
           },
-          notify:this.$vs.notify
+          notify:this.$vs.notify,
+          imageFile:this.imageFile
         }
         this.$store.dispatch('contest/addContest',payload)
-        this.isSidebarActiveLocal = false
     }
   },
   components: {

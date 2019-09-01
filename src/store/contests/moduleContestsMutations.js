@@ -23,6 +23,9 @@ const mutations = {
   },
   addContest(state,contest){
     state.contests.push(contest)
+  },
+  setUploadProgress(state,uploadTask){
+    state.uploadTask = uploadTask
   }
 }
 
