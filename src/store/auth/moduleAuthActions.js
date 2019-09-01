@@ -102,8 +102,36 @@ export default {
                   // just reload the page to get fresh data
                   // set new user data in localstorage
                 if(!isUsernameUpdateRequired) {
-                  router.push(router.currentRoute.query.to || '/');
-                  commit('UPDATE_AUTHENTICATED_USER', result.user.providerData[0])
+                  firebase.firestore().collection('users').doc(result.user.email).get()
+                    .then((doc)=>{ 
+                        if (doc.exists) {
+                            router.push(router.currentRoute.query.to || '/');
+                            let newUserData = Object.assign({}, result.user.providerData[0])
+                            newUserData.rule = 'admin'
+                            newUserData.displayName = doc.data().name
+                            newUserData.current_contest = doc.data().current_contest
+                            commit('UPDATE_AUTHENTICATED_USER', newUserData)
+                        } else {
+                            // doc.data() will be undefined in this case
+                            payload.notify({
+                                time: 8800,
+                                title: 'Error',
+                                text: 'cant find firebase User',
+                                iconPack: 'feather',
+                                icon: 'icon-alert-circle',
+                                color: 'danger'
+                            })
+                        }
+                    }).catch(function(error) {
+                        payload.notify({
+                            time: 8800,
+                            title: 'Error',
+                            text: error.message,
+                            iconPack: 'feather',
+                            icon: 'icon-alert-circle',
+                            color: 'danger'
+                        });    
+                    });
                 }
             }, (err) => {
 
@@ -322,6 +350,7 @@ export default {
                     let newUserData = Object.assign({}, payload.user.providerData[0])
                     newUserData.rule = 'admin'
                     newUserData.displayName = payload.username
+                    newUserData.current_contest = doc.data().current_contest
                     commit('UPDATE_AUTHENTICATED_USER', newUserData)
 
                     // If reload is required to get fresh data after update
