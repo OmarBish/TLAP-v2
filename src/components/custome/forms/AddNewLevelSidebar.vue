@@ -34,8 +34,6 @@
               <vs-input-number v-model="score"/>
             </span>
         </div>
-          
-
         
       </div>
     </VuePerfectScrollbar>
