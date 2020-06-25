@@ -10,6 +10,7 @@ export default {
       contest_id:'',
       start_time:'',
       duration:null
-    }
+    },
+    solvedQestions:[]
 }
   

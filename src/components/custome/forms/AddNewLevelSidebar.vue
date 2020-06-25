@@ -39,7 +39,7 @@
     </VuePerfectScrollbar>
 
     <div class="flex flex-wrap items-center justify-center p-6" slot="footer">
-      <vs-button class="mr-6" @click="submitContest">Add Contest</vs-button>
+      <vs-button class="mr-6" @click="submitLevel">Add Contest</vs-button>
       <vs-button type="border" color="danger" @click="isSidebarActiveLocal = false">Cancel</vs-button>
     </div>
   </vs-sidebar>
@@ -79,12 +79,13 @@ export default {
     }
   },
   methods: {
-    submitContest(){
+    submitLevel(){
         const payload={
           level:{
             name:this.name,
             difficulty:this.difficulty,
             score:this.score,
+            active:false
           },
           notify:this.$vs.notify
         }

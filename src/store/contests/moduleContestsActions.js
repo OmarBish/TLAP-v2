@@ -85,53 +85,76 @@ const actions = {
     db.collection('contests').add(data)
     .then((res)=>{
       data.id = res.id
-      //img upload to firestorage
-      var storageRef = firebase.storage().ref();
-      var questionImagesRef = storageRef.child('images/contests/'+res.id);
-
-      let uploadTask = questionImagesRef.put(payload.imageFile)
-      uploadTask.on('state_changed', function(snapshot){
-        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
-        let task = {
-          status:snapshot.state,
-          progress:progress
-        }
-        commit('setUploadProgress',task)
-      },function(error) {
-        // Handle unsuccessful uploads
-      }, function() {
-        // Handle successful uploads on complete
-        console.log('file uploaded successfuly');
-        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-          console.log('File available at', downloadURL);
-          db.collection('contests').doc(res.id).update({
-            imgURL:downloadURL
-          }).then(()=>{
+      if(payload.imageFile){
+        //img upload to firestorage
+        var storageRef = firebase.storage().ref();
+        var questionImagesRef = storageRef.child('images/contests/'+res.id);
+  
+        let uploadTask = questionImagesRef.put(payload.imageFile)
+        uploadTask.on('state_changed', function(snapshot){
+          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+          let task = {
+            status:snapshot.state,
+            progress:progress
+          }
+          commit('setUploadProgress',task)
+        },function(err) {
+            console.error(err);
             payload.notify({
-              title:'Success',
-              text:'Question added successfully',
-              color:'success',
+              title: 'Error',
+              text: 'See log for more info',
               iconPack: 'feather',
-              icon:'icon-check'
+              icon: 'icon-alert-circle',
+              color: 'danger'
             })
-            commit('setUploadProgress',{
-              status:'COMPLEATED',
-              progress:100
+        }, function() {
+          // Handle successful uploads on complete
+          console.log('file uploaded successfuly');
+          uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+            console.log('File available at', downloadURL);
+            db.collection('contests').doc(res.id).update({
+              imgURL:downloadURL
+            }).then(()=>{
+              payload.notify({
+                title:'Success',
+                text:'Question added successfully',
+                color:'success',
+                iconPack: 'feather',
+                icon:'icon-check'
+              })
+              commit('setUploadProgress',{
+                status:'COMPLEATED',
+                progress:100
+              })
+              data.imgURL = downloadURL
+              commit('addContest',data);
+              payload.notify({
+                title: 'Success',
+                text: 'Contest addedd successfuly',
+                color: 'success'
+              })
             })
-            data.imgURL = downloadURL
-            commit('addContest',data);
-          })
+          });
         });
-      });
+      }else{
+        // set default img
+        commit('addContest',data);
+        payload.notify({
+          title: 'Success',
+          text: 'Contest addedd successfuly',
+          color: 'success'
+        })
+      }
     }).catch((err)=>{
+      console.error(err);
       payload.notify({
         title: 'Error',
-        text: err,
+        text: 'See log for more info',        
         iconPack: 'feather',
         icon: 'icon-alert-circle',
         color: 'danger'
-    })
+      })
     })
   }
 }

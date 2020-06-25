@@ -17,11 +17,15 @@ const mutations = {
     })
   },
   setLevels(state,levels){
+    state.levels=[];
     state.levels = levels.sort((a,b)=>{
       return a.difficulty - b.difficulty
     })
     
-  }
+  },
+  activateLevel(state,data){
+    state.levels.find((contest)=> contest.id == data.id ).active = data.active    
+  },
 }
 
 export default mutations

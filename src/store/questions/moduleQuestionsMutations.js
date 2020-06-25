@@ -17,8 +17,10 @@ const mutations = {
   },
   setUploadProgress(state,uploadTask){
     state.uploadTask = uploadTask
+  },
+  addScore(state,score){
+    state.scores[score.question_id] = score
   }
-
 }
 
 export default mutations

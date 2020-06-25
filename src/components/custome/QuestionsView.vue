@@ -20,7 +20,7 @@
 
           <!-- ADD NEW -->
           <label for="active">Level Active</label>
-          <vs-switch color="success" v-model="active" />
+          <vs-switch  color="success" v-model="status" vs-icon="done"/>
         </div>
 
         <!-- ITEMS PER PAGE -->
@@ -76,11 +76,12 @@
             </vs-td>
 
             <vs-td>
-              <vs-chip :color="getStatusColor(tr.status)" class="product-order-status">{{ getStatusText(tr.status) }}</vs-chip>
+              <vs-chip :color="getStatusColor(score[tr.id])" class="product-order-status">{{ getStatusText(score[tr.id]) }}</vs-chip>
             </vs-td>
 
             <vs-td>
-              <p class="product-price">${{ tr.price }}</p>
+              <p class="product-price" v-if="score[tr.id]">{{score[tr.id].score}}</p>
+              <p class="product-price" v-if="!score[tr.id]">0</p>
             </vs-td>
             
           </vs-tr>
@@ -107,6 +108,7 @@ export default {
       itemsPerPage: 4,
       isMounted: false,
       AddNewQuestionSidebar: false,
+      levelStatus:this.$props.active
     }
   },
   computed: {
@@ -118,6 +120,18 @@ export default {
     },
     questions(){
       return this.$store.getters['questions/getQuestions']
+    },
+    score(){
+      return this.$store.getters['user/getScore']
+    },
+    status:{
+      get(){
+        return this.levelStatus
+      },
+      set(){
+        this.levelStatus = !this.levelStatus
+        this.setLevelToActive();
+      }
     }
   },
   props:{
@@ -131,20 +145,32 @@ export default {
     }
   },
   methods: {
+    getScore(id){
+      if(this.score[id])
+        return this.score[id]
+      else{
+        return {
+          score:0,
+          id:''
+        }
+      }
+    },
     handleSelected(tr){
       console.log(tr)
       this.$router.push({ name: 'singleQuestion', params: { id: tr.id }})
     },
-    getStatusText(status) {
-      if(!status) return "Need work"
-      if(status == 'delivered') return "success"
-      if(status == 'canceled') return "danger"
-      return "primary"
+    getStatusText(scoreObj={score:0}) {
+      let score = scoreObj.score;
+      if(!score) return "Need work"
+      if(score < 75) return "Good job"
+      if(score > 75) return "Excelent"
+      return "N/A"
     },
-    getStatusColor(status) {
-      if(!status) return "danger"
-      if(status == 'delivered') return "success"
-      if(status == 'canceled') return "warning"
+    getStatusColor(scoreObj={score:0}) {
+      let score = scoreObj.score;
+      if(!score) return "danger"
+      if(score > 75 ) return "success"
+      if(score < 75) return "warning"
       return "primary"
     },
     getPopularityColor(num) {
@@ -165,12 +191,23 @@ export default {
         return obj
       });
       return formattedData
+    },
+    setLevelToActive(){
+      let payload = {
+        data:{
+          id : this.levelID,
+          contestID : JSON.parse(localStorage.getItem('userInfo')).current_contest.contest_id,
+          active:this.status
+        },
+        notify : this.$vs.notify
+      }
+      this.$store.dispatch('levels/activateLevel',payload)
     }
   },
   created() {
-    console.log('this.levelID',this.levelID)
-
+    let contestID = JSON.parse(localStorage.getItem('userInfo')).current_contest.contest_id
     this.$store.dispatch('questions/fetchQuestions',this.levelID)
+    this.$store.dispatch('user/fetchSolvedQuestions',contestID)
   },
   mounted() {
     this.isMounted = true;

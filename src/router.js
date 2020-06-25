@@ -78,6 +78,10 @@ const router = new Router({
                     }
                 },
                 {
+                    path: '/game/apps/turtle',
+                    name: 'turtle',
+                },
+                {
                     path: '/questions',
                     name: 'questions',
                     component: () => import('./views/Questions.vue'),
@@ -92,9 +96,31 @@ const router = new Router({
                     }
                 },
                 {
+                    path: '/submissions',
+                    name: 'submissions',
+                    component: () => import('./views/Submissions.vue'),
+                    meta: {
+                        breadcrumb: [
+                            { title: 'Home', url: '/' },
+                            { title: 'Contests', url:'/contests'},
+                            { title: 'submissions', active: true },
+                        ],
+                        pageTitle: 'Submissions',
+                        rule: 'admin'
+                    }
+                },
+                {
                     path: '/questions/:id',
                     name: 'singleQuestion',
                     component: () => import('./views/SingleQuestion.vue'),
+                    meta: {
+                        rule: 'editor'
+                    }
+                },
+                {
+                    path: '/questions/:id/submissions',
+                    name: 'SubmissionsReview',
+                    component: () => import('./views/SubmissionsReview.vue'),
                     meta: {
                         rule: 'editor'
                     }

@@ -19,7 +19,7 @@
 
       <template v-if="breakpoint != 'md'">
         <!-- STARRED PAGES - FIRST 10 -->
-        <ul class="vx-navbar__starred-pages">
+        <!-- <ul class="vx-navbar__starred-pages">
           <draggable v-model="starredPagesLimited" :group="{name: 'pinList'}" class="flex cursor-move">
             <li class="starred-page" v-for="page in starredPagesLimited" :key="page.url">
               <vx-tooltip :text="page.label" position="bottom" delay=".3s">
@@ -27,10 +27,10 @@
               </vx-tooltip>
             </li>
           </draggable>
-        </ul>
+        </ul> -->
 
         <!-- STARRED PAGES MORE -->
-        <div class="vx-navbar__starred-pages--more-dropdown" v-if="starredPagesMore.length">
+        <!-- <div class="vx-navbar__starred-pages--more-dropdown" v-if="starredPagesMore.length">
           <vs-dropdown vs-custom-content vs-trigger-click>
             <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" class="cursor-pointer p-2"></feather-icon>
             <vs-dropdown-menu>
@@ -44,29 +44,15 @@
               </ul>
             </vs-dropdown-menu>
           </vs-dropdown>
-        </div>
+        </div> -->
 
-        <div class="bookmark-container">
+        <!-- <div class="bookmark-container">
           <feather-icon icon="StarIcon" :svgClasses="['stoke-current text-warning', {'text-white': navbarColor != '#fff'}]" class="cursor-pointer p-2" @click.stop="showBookmarkPagesDropdown = !showBookmarkPagesDropdown" />
                     <div v-click-outside="outside" class="absolute bookmark-list w-1/3 xl:w-1/4 mt-4" v-if="showBookmarkPagesDropdown">
           <vx-auto-suggest :autoFocus="true" :data="navbarSearchAndPinList" @selected="selected" @actionClicked="actionClicked" inputClassses="w-full" show-action show-pinned background-overlay></vx-auto-suggest>
           </div>
-        </div>
+        </div> -->
       </template>
-
-
-      <vs-spacer></vs-spacer>
-
-      <!-- I18N -->
-      <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
-        <span class="cursor-pointer flex i18n-locale"><img class="h-4 w-5" :src="require(`@/assets/images/flags/${$i18n.locale}.png`)" :alt="$i18n.locale" /><span class="hidden sm:block ml-2">{{ getCurrentLocaleData.lang }}</span></span>
-        <vs-dropdown-menu class="w-48 i18n-dropdown vx-navbar-dropdown">
-          <vs-dropdown-item @click="updateLocale('en')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/en.png" alt="en" /> &nbsp;English</vs-dropdown-item>
-          <vs-dropdown-item @click="updateLocale('fr')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/fr.png" alt="fr" /> &nbsp;French</vs-dropdown-item>
-          <vs-dropdown-item @click="updateLocale('de')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/de.png" alt="de" /> &nbsp;German</vs-dropdown-item>
-          <vs-dropdown-item @click="updateLocale('pt')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/pt.png" alt="pt" /> &nbsp;Portuguese</vs-dropdown-item>
-        </vs-dropdown-menu>
-      </vs-dropdown>
 
             <!-- SEARCHBAR -->
             <div class="search-full-container w-full h-full absolute left-0 rounded-lg" :class="{'flex': showFullSearch}" v-show="showFullSearch">
@@ -87,30 +73,45 @@
             </div>
             <feather-icon icon="SearchIcon" @click="showFullSearch = true" class="cursor-pointer navbar-fuzzy-search ml-4"></feather-icon>
 
+        <!-- I18N -->
+      <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer ml-3">
+        <span class="cursor-pointer flex i18n-locale"><img class="h-4 w-5" :src="require(`@/assets/images/flags/${$i18n.locale}.png`)" :alt="$i18n.locale" /><span class="hidden sm:block ml-2">{{ getCurrentLocaleData.lang }}</span></span>
+        <vs-dropdown-menu class="w-48 i18n-dropdown vx-navbar-dropdown">
+          <vs-dropdown-item @click="updateLocale('en')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/en.png" alt="en" /> &nbsp;English</vs-dropdown-item>
+          <vs-dropdown-item @click="updateLocale('fr')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/fr.png" alt="fr" /> &nbsp;French</vs-dropdown-item>
+          <vs-dropdown-item @click="updateLocale('de')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/de.png" alt="de" /> &nbsp;German</vs-dropdown-item>
+          <vs-dropdown-item @click="updateLocale('pt')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/pt.png" alt="pt" /> &nbsp;Portuguese</vs-dropdown-item>
+        </vs-dropdown-menu>
+      </vs-dropdown>
+
+      <vs-spacer></vs-spacer>
+
+      
+
             <!-- CART DROPDOWN -->
-            <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
+            <!-- <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
                 <feather-icon icon="ShoppingCartIcon" class="cursor-pointer ml-4 mr-6 mt-1" :badge="cartItems.length"></feather-icon>
-                <vs-dropdown-menu class="cart-dropdown vx-navbar-dropdown" :class="{'dropdown-custom': cartItems.length}">
+                <vs-dropdown-menu class="cart-dropdown vx-navbar-dropdown" :class="{'dropdown-custom': cartItems.length}"> -->
 
                     <!-- IF CART HAVE ITEMS: HEADER -->
-                    <template v-if="cartItems.length">
+                    <!-- <template v-if="cartItems.length">
                         <div class="notification-header text-center p-5 bg-primary text-white">
                             <h3 class="text-white">{{ cartItems.length }} Item<span v-show="cartItems.length > 1">s</span></h3>
                             <p class="opacity-75">In Your Cart</p>
-                        </div>
+                        </div> -->
 
                         <!-- CART ITEMS -->
-                        <VuePerfectScrollbar ref="mainSidebarPs" class="scroll-area--cart-items-dropdowm p-0 mb-10" :settings="settings">
+                        <!-- <VuePerfectScrollbar ref="mainSidebarPs" class="scroll-area--cart-items-dropdowm p-0 mb-10" :settings="settings">
                         <ul class="bordered-items">
-                            <li v-for="item in cartItems" :key="item.objectID" class="vx-row no-gutter cart-item cursor-pointer">
+                            <li v-for="item in cartItems" :key="item.objectID" class="vx-row no-gutter cart-item cursor-pointer"> -->
 
                                 <!-- IMG COL -->
-                                <div class="vx-col w-1/5 item-img-container bg-white flex items-center justify-center">
+                                <!-- <div class="vx-col w-1/5 item-img-container bg-white flex items-center justify-center">
                                     <img :src="item.image" alt="item" class="cart-dropdown-item-img p-4">
-                                </div>
+                                </div> -->
 
                                 <!-- INFO COL -->
-                                <div class="vx-col w-4/5 pr-4 pl-2 py-4 flex flex-col justify-center">
+                                <!-- <div class="vx-col w-4/5 pr-4 pl-2 py-4 flex flex-col justify-center">
                                     <span class="font-medium block cart-item-title truncate">{{ item.name }}</span>
                                     <small class="truncate mb-2">{{ item.description }}</small>
                                     <div class="flex items-center justify-between">
@@ -131,14 +132,14 @@
                             </span>
 
                         </div>
-                    </template>
+                    </template> -->
 
                     <!-- IF CART IS EMPTY -->
-                    <template v-else>
+                    <!-- <template v-else>
                         <p class="p-4">Your Cart Is Empty.</p>
                     </template>
                 </vs-dropdown-menu>
-            </vs-dropdown>
+            </vs-dropdown> -->
 
       <!-- NOTIFICATIONS -->
       <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
@@ -220,7 +221,7 @@
                 <feather-icon icon="UserIcon" svgClasses="w-4 h-4" />
                 <span class="ml-2">Profile</span>
               </li>
-              <li
+              <!-- <li
                 class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
                 @click="$router.push('/apps/email')">
 
@@ -247,7 +248,7 @@
 
                 <feather-icon icon="HeartIcon" svgClasses="w-4 h-4" />
                 <span class="ml-2">Wish List</span>
-              </li>
+              </li> -->
 
               <vs-divider class="m-1"></vs-divider>
 

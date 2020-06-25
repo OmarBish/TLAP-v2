@@ -8,6 +8,15 @@ const getters = {
       
       console.log(state.questions.find((question)=>question.id == id))
       return state.questions.find((question)=>question.id == id)
+    },
+    getScore:(state) => (id) =>{
+      if(state.scores[id])
+        return state.scores[id]
+      else
+        return {
+          score:0,
+          img:''
+        }
     }
 
 }

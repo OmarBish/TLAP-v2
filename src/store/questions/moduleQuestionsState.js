@@ -9,6 +9,7 @@ export default {
     uploadTask:{
       status:null,
       progress:0
-    }
+    },
+    scores:[]
 }
   

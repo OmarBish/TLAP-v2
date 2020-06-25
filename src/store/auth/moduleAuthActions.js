@@ -300,7 +300,13 @@ export default {
                 return firebase.firestore().collection('users').doc(payload.userDetails.email).set({
                     score:0,
                     rule:'admin',
-                    name:payload.userDetails.username
+                    name:payload.userDetails.username,
+                    current_contest:{
+                        start_time:{seconds:null,},
+                        duration:0,
+                        contest_id:null,
+                        name:null
+                    }
                 })
                 
             }, (error) => {

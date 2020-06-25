@@ -1,28 +1,51 @@
 <template>
 <div>
-    <h1>{{questoin.name}}</h1>
-    <div class="vx-col w-full sm:w-1/2 md:w-1/2 mb-base">
-        <vx-card class="mt-2" title="Picture" collapse-action >
-            <div class="text-center">
-                <img :src="questoin.imgURL" alt="none" sizes="400" class="myImage mx-auto" id="myimage">
-            </div>
-        </vx-card>
+    <!-- hidden content -->
+    <vs-popup class="holamundo" title="Error" :active.sync="popupActive">
+      <p> You must run the code in order to submit your question</p>
+    </vs-popup>
+    <!-------------------->
+    <span class="text-center mb-1"><h1>{{questoin.name}}</h1> <p>score :- {{score.score}}</p> </span>
+    <div class="vx-row">
+        <div class="vx-col w-1/2 sm:w-1/2 md:w-1/2 mb-base">
+            <vx-card class="mt-2" title="Picture" collapse-action >
+                <div class="text-center">
+                    <img :src="questoin.imgURL" alt="none" sizes="400" class="myImage mx-auto" id="myimage">
+                    
+
+                </div>
+            </vx-card>
+        </div>
+        <div class="vx-col w-1/2 sm:w-1/2 md:w-1/2 mb-base">
+            <vx-card class="mt-2" title="Your latest Submition" collapse-action >
+                <div class="text-center" v-if="score.image">
+                    <img :src="score.image" alt="none" sizes="400" class="myImage mx-auto" id="myimage">                    
+                </div>
+                <div class="text-center" v-if="!score.image">
+                    <h1>
+                        You haven't made any submission yet 
+                    </h1>
+                </div>
+            </vx-card>
+        </div>
     </div>
+    
 
     <div class="vx-col w-full  mb-base">
         <vx-card class="mt-2" title="Draw" collapse-action >
-                <iframe class="game" src="https://ieee-najah.github.io/apps/turtle/" width="95%" height="655" sandbox="allow-same-origin allow-scripts"></iframe>
+                <iframe @load="setBlocks" class="game" ref="game" src="/game/apps/turtle/" width="95%" height="655" sandbox="allow-same-origin allow-scripts"></iframe>
         </vx-card>
     </div>
-    
+    <div class="text-center w-full">
+    <vs-button @click="submitQuestion" size="large" class="mx-auto">Submit</vs-button>
+    </div>
+
 </div>
    
 
 </template>
 
 <script>
-import VueFriendlyIframe from 'vue-friendly-iframe';
-
 
 export default {
     data(){
@@ -32,99 +55,73 @@ export default {
             xpoints:[],
             turtle:{
                 src:"./turtle-apps/turtle/index.html"
-            }
+            },
+            popupActive:false
         }
     },
     computed:{
         questoin(){
             return this.$store.getters['questions/getQuestion'](this.$route.params.id)
+        },
+        score(){
+                return this.$store.getters['questions/getScore'](this.$route.params.id)
         }
     },
     methods:{
-        clear() { // clear canvas function
-            this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-        },
-        mouseEnter(){
-            console.log("enter")
-            // magnify.show();
+        submitQuestion(){
+            var Blockly  =this.$refs.game.contentWindow.Blockly;
+            var Turtle  = this.$refs.game.contentWindow.Turtle;
 
-        },
-        mouseLeave(){
-            console.log("hi")
-            // magnify.hide();
-
-        },
-        mouseup(e){
-            let rect = this.$refs.canvas.getBoundingClientRect();
-            let ctx = this.$refs.canvas.getContext('2d'); 
-            ctx.clearRect(0,0,400,400);
-            this.xpoints.push((e.clientX - rect.left));
-            this.ypoints.push((e.clientY - rect.top));
-            console.log(this.xpoints.length)
-            switch(this.xpoints.length){
-                case 3:
-                    this.drawAngle(this.xpoints[0], this.ypoints[0], this.xpoints[1], this.ypoints[1], this.xpoints[2], this.ypoints[2]);
-                    this.drawLine(this.xpoints[1], this.ypoints[1], this.xpoints[2], this.ypoints[2]);
-                    this.drawPoint(this.xpoints[2], this.ypoints[2]);
-                case 2:
-                    this.drawLine(this.xpoints[0], this.ypoints[0], this.xpoints[1], this.ypoints[1]);
-                    this.drawPoint(this.xpoints[1], this.ypoints[1]);
-                case 1:
-                    this.drawPoint(this.xpoints[0], this.ypoints[0]);
-                    break;
-                default:
-                    this.xpoints = [];
-                    this.ypoints = [];
-
+            // Has to be runned
+            if (!Turtle.executed) {
+                this.popupActive =  true
+                return ;
             }
+            this.popupActive =  false
+            
+            var xml = Blockly.Xml.workspaceToDom(Blockly.getMainWorkspace());
+            var blocks = encodeURIComponent(xml.innerHTML);
+            var image = this.$refs.game.contentDocument.getElementById('display').toDataURL('image/png',1.0);
+            console.log('blocks' , blocks)
+            console.log('image' , image)
+            let data={
+                question_id:this.$route.params.id,
+                blocks: blocks,
+                image: image,
+                user_id: JSON.parse(localStorage.getItem('userInfo')).uid,
+                score:0
+            }
+            let payload={
+                score:data,
+                notify:this.$vs.notify
+            }
+            this.$store.dispatch('questions/submitScore',payload);
         },
-         drawLine(startX, startY, toX, toY){
-            this.ctx.strokeStyle = '#00f';
-            this.ctx.beginPath();
-            this.ctx.moveTo(startX, startY);
-            this.ctx.lineTo(toX,toY);
-            this.ctx.stroke();
-            this.ctx.fillStyle = '#00f';
-            this.ctx.fillText(""+Math.floor(Math.sqrt(Math.pow(startX - toX, 2) + Math.pow(startY - toY,2))), (startX + toX)/2+5, (startY + toY)/2+5);
-        },
-        drawPoint(xp, yp){
-            this.ctx.fillStyle = '#f00';
-            this.ctx.beginPath();
-            this.ctx.arc(xp, yp, 3, 0, 2*Math.PI);
-            this.ctx.fill();
-            this.ctx.fillText("("+Math.floor(xp-200)+","+Math.floor(-yp+200)+")", xp+5, yp-5);
-        },
-    
-        drawAngle(x0, y0, x1, y1, x2, y2){
-            var stangle = Math.atan2(x1-x0, y1-y0);
-            var endangle = Math.atan2(x1-x2, y1 - y2);
-            var angle = Math.floor((Math.abs(stangle - endangle)*180/Math.PI));
-            angle = angle>180?360-angle:angle;
-            this.ctx.fillStyle = '#f08';
-            this.ctx.fillText(""+angle+"\xB0", x1+5, y1+10);
-        },
-        
-        
+        setBlocks(){
+            let blocks = decodeURIComponent(this.$store.getters['questions/getScore'](this.$route.params.id).blocks)
+            console.log(blocks)
+            let defaultXml = '<xml>' + blocks +'</xml>'
+            let BlocklyApps =this.$refs.game.contentWindow.BlocklyApps
+            BlocklyApps.loadBlocks(defaultXml);
+        }
     },
 
     mounted(){
-        let canvas = this.$refs.canvas;
-        this.ctx = canvas.getContext('2d'); 
-        // magnify.add("myimage", 3);
-
+        console.log(this.score)
     },
     created(){
+        //TODO Fetch Submission
         if(!this.$store.getters['questions/getQuestion'](this.$route.params.id))
             this.$store.dispatch('questions/fetchQuestion',this.$route.params.id)
-    },
-    components:{
-        'vue-friendly-iframe': VueFriendlyIframe
     }
 
 }
 </script>
 
 <style>
+.big-text{
+    font-size: 80px
+}
 
 .img-magnifier-container {
   position:relative;

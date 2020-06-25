@@ -42,57 +42,112 @@ const actions = {
   },
   addQuestion({commit},payload){
     let data = payload.question
+    data.score=0
     db.collection('questions').add(data)
     .then((res)=>{
       data.id = res.id
-      var storageRef = firebase.storage().ref();
-      var questionImagesRef = storageRef.child('images/questions/'+res.id);
+      if(payload.imageFile){
 
-      let uploadTask = questionImagesRef.put(payload.imageFile)
-      uploadTask.on('state_changed', function(snapshot){
-        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
-        let task = {
-          status:snapshot.state,
-          progress:progress
-        }
-        commit('setUploadProgress',task)
-      },function(error) {
-        // Handle unsuccessful uploads
-      }, function() {
-        // Handle successful uploads on complete
-        console.log('file uploaded successfuly');
-        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-          console.log('File available at', downloadURL);
-          db.collection('questions').doc(res.id).update({
-            imgURL:downloadURL
-          }).then(()=>{
-            payload.notify({
-              title:'Success',
-              text:'Question added successfully',
-              color:'success',
-              iconPack: 'feather',
-              icon:'icon-check'
-            })
-            commit('setUploadProgress',{
-              status:'COMPLEATED',
-              progress:100
-            })
-            data.imgURL = downloadURL
-            commit('addQuestion',data);
+        var storageRef = firebase.storage().ref();
+        var questionImagesRef = storageRef.child('images/questions/'+res.id);
+  
+        let uploadTask = questionImagesRef.put(payload.imageFile)
+        uploadTask.on('state_changed', function(snapshot){
+          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+          let task = {
+            status:snapshot.state,
+            progress:progress
+          }
+          commit('setUploadProgress',task)
+        },function(err) {
+          console.error(err);
+          payload.notify({
+            title: 'Error',
+            text: 'Check console for more info',
+            iconPack: 'feather',
+            icon: 'icon-alert-circle',
+            color: 'danger'
           })
+        }, function() {
+          // Handle successful uploads on complete
+          console.log('file uploaded successfuly');
+          uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+            console.log('File available at', downloadURL);
+            db.collection('questions').doc(res.id).update({
+              imgURL:downloadURL
+            }).then(()=>{
+              payload.notify({
+                title:'Success',
+                text:'Question added successfully',
+                color:'success',
+                iconPack: 'feather',
+                icon:'icon-check'
+              })
+              commit('setUploadProgress',{
+                status:'COMPLEATED',
+                progress:100
+              })
+              data.imgURL = downloadURL
+              commit('addQuestion',data);
+              payload.notify({
+                title: 'Success',
+                text: 'Question was addedd successfully ',
+                iconPack: 'feather',
+                icon: 'icon-check',
+                color: 'success'
+              })
+            })
+          });
         });
-      });
+      }else{
+        commit('addQuestion',data);
+        payload.notify({
+          title: 'Success',
+          text: 'Question was addedd successfully ',
+          iconPack: 'feather',
+          icon: 'icon-check',
+          color: 'success'
+        })
+      }
     }).catch((err)=>{
       console.error(err);
       payload.notify({
         title: 'Error',
-        text: err,
+        text: 'Check console for more info',
         iconPack: 'feather',
         icon: 'icon-alert-circle',
         color: 'danger'
+      })
     })
-    })
+  },
+  submitScore({commit},payload){
+    let data = payload.score
+    db.collection("questions").doc(data.question_id)
+      .collection('submissions').add(data)
+      .then( (doc) => {
+          const score = {
+            id:doc.id,
+            ...data
+          }
+          payload.notify({
+            title:'Success',
+            text: 'Question submitted successfully',
+            iconPack: 'feather',
+            icon: 'icon-check',
+            color: 'success'
+          })
+        commit('addScore',score)
+    }).catch((err)=>{
+      console.error(err);
+      payload.notify({
+        title: 'Error',
+        text: 'Check console for more info',
+        iconPack: 'feather',
+        icon: 'icon-alert-circle',
+        color: 'danger'
+      })
+    });
   }
 }
 

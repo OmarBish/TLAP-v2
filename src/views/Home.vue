@@ -11,14 +11,13 @@
 <div> 
    <div class="vx-row " id="dashboard-analytics">
 
-    <!-- CARD 1: CONGRATS -->
+    <!-- WELCOME -->
     <div class="vx-col w-full lg:w-1/2 mb-base">
       <vx-card slot="no-body" class="text-center bg-primary-gradient greet-user welcome-card verven">
        
         
         <div class="">
             <feather-icon icon="AwardIcon" class="p-6 mb-8 bg-primary inline-flex rounded-full text-white shadow" svgClasses="h-8 w-8"></feather-icon>
-            <!-- TODO set name dynamically -->
             <h1 class="mb-6 text-white align-middle">Welcome to TLAP </h1>
             <h1>{{user_displayName}}</h1>
         </div>
@@ -27,8 +26,11 @@
       </vx-card>
     </div>
 
-    <div class="vx-col w-full lg:w-1/2 mb-base">
-      <scoreboard></scoreboard>
+    <div class="vx-col w-full lg:w-1/2 mb-base " >
+      <scoreboard v-if="!contestEnded"></scoreboard>
+      <div class="flex flex-col justify-center" v-if="contestEnded">>
+        <vs-button @click="$router.push('/contests')" class="ma" size="large" color="success" type="filled">Join Contest Now</vs-button>
+      </div>
     </div>
   </div>
 
@@ -50,6 +52,10 @@
 
 import Scoreboard from '../components/custome/Scoreboard.vue'
 import creativeCarsoul from '../components/custome/CreativeCarsoul.vue'
+
+import firebase from 'firebase/app'
+import 'firebase/firestore'
+
 
 
 export default {
@@ -149,7 +155,26 @@ export default {
     computed:{
       user_displayName(){
         return JSON.parse(localStorage.getItem('userInfo')).displayName
+      },
+      contestEnded(){
+        let currentContest = JSON.parse(localStorage.getItem('userInfo')).current_contest
+
+        if(!currentContest) return false;
+        let startTime = currentContest.start_time.seconds
+        let duration = currentContest.duration
+        let endtime = startTime + duration
+        let currentTime = firebase.firestore.Timestamp.now().seconds
+
+        if( endtime < currentTime){
+        console.log('endtime',endtime)
+        console.log('currentTime',currentTime)
+            return true
+        }else{
+          return false
+        }
       }
+    },
+    mounted(){
     }
    
 

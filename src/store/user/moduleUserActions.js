@@ -33,6 +33,15 @@ const actions = {
     }).catch((err)=>{
       console.error(err);
     });
+  },
+  fetchSolvedQuestions({commit},contestID){
+    db.collection("users").doc(JSON.parse(localStorage.getItem('userInfo')).uid)
+      .collection("solvedQuestions").doc(contestID)
+      .get().then( (doc) => {
+        commit('updateSolvedQuestions',doc.data().solved)
+      }).catch((err)=>{
+        console.error(err);
+      });
   }
 
 }

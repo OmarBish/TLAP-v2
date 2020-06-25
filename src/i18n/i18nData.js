@@ -4,6 +4,8 @@ export default {
 		Home:'Home',
 		Contests:'Contests',
 		Questions :'Questions',
+		Submissions : "Submissions",
+		SubmissionsReview : "Submissions Review",
 		SingleQuestion : 'Single Question',
 		Dashboard: 'Dashboard',
 		eCommerce: 'eCommerce',
